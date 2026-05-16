@@ -1,0 +1,97 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /tickets
+        - link "Admin" [ref=e15] [cursor=pointer]:
+          - /url: /admin
+      - generic [ref=e16]:
+        - button "Language" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+          - generic [ref=e21]: Language
+        - link [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e23]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Test User
+          - button "Log Out" [ref=e29] [cursor=pointer]
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - link "Service Catalog" [ref=e32] [cursor=pointer]:
+        - /url: /catalog
+        - img [ref=e33]
+        - text: Service Catalog
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - generic [ref=e37]:
+            - heading "Cloud Virtual Machine" [level=1] [ref=e38]
+            - paragraph [ref=e39]: Scalable virtual machines with SSD storage, public IPs, and a choice of operating systems.
+          - generic [ref=e40]:
+            - generic [ref=e41]:
+              - text: TZS 75,000
+              - generic [ref=e42]: /pricing
+            - link "Order Now" [ref=e43] [cursor=pointer]:
+              - /url: /order/cloud-virtual-machine
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - generic [ref=e46]:
+              - img [ref=e47]
+              - generic [ref=e49]: SLA Tier
+            - paragraph [ref=e50]: GOLD
+            - paragraph [ref=e51]: 99.5% uptime (≤ 43.8 hrs/year)
+          - generic [ref=e52]:
+            - generic [ref=e53]:
+              - img [ref=e54]
+              - generic [ref=e57]: Contract period
+            - paragraph [ref=e58]: 1 month(s)
+          - generic [ref=e59]:
+            - generic [ref=e60]:
+              - img [ref=e61]
+              - generic [ref=e63]: Setup fee
+            - paragraph [ref=e64]: Free
+        - generic [ref=e65]:
+          - heading "Features" [level=2] [ref=e66]
+          - list [ref=e67]:
+            - listitem [ref=e68]:
+              - img [ref=e69]
+              - text: 1-32 vCPU
+            - listitem [ref=e71]:
+              - img [ref=e72]
+              - text: 1-64 GB RAM
+            - listitem [ref=e74]:
+              - img [ref=e75]
+              - text: SSD storage
+            - listitem [ref=e77]:
+              - img [ref=e78]
+              - text: Public IP included
+            - listitem [ref=e80]:
+              - img [ref=e81]
+              - text: Ubuntu, Windows, Rocky Linux
+  - contentinfo [ref=e83]:
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e86]
+        - paragraph [ref=e87]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e88]:
+        - heading "Contact" [level=4] [ref=e89]
+        - paragraph [ref=e90]: info@zictia.go.tz
+        - paragraph [ref=e91]: +255 24 2235784
+      - generic [ref=e92]:
+        - heading "Links" [level=4] [ref=e93]
+        - generic [ref=e94]:
+          - link "Services" [ref=e95] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e96] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e97] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e98]: © 2026 ZICTIA. All rights reserved.

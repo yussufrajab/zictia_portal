@@ -1,0 +1,66 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /tickets
+        - link "Admin" [ref=e15] [cursor=pointer]:
+          - /url: /admin
+      - generic [ref=e16]:
+        - button "Language" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+          - generic [ref=e21]: Language
+        - link [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e23]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Test User
+          - button "Log Out" [ref=e29] [cursor=pointer]
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - link "Back to service" [ref=e48] [cursor=pointer]:
+        - /url: /catalog/cloud-virtual-machine
+        - img [ref=e49]
+        - text: Back to service
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - img [ref=e54]
+          - generic [ref=e57]:
+            - heading "Order Cloud Virtual Machine" [level=1] [ref=e58]
+            - paragraph [ref=e59]: Step 4 of 3
+        - generic [ref=e125]:
+          - img [ref=e127]
+          - heading "Order Submitted" [level=2] [ref=e129]
+          - paragraph [ref=e130]: Your order is under review. You will be notified once it is approved.
+          - generic [ref=e131]:
+            - link "Go to Dashboard" [ref=e132] [cursor=pointer]:
+              - /url: /dashboard
+            - link "Browse More Services" [ref=e133] [cursor=pointer]:
+              - /url: /catalog
+  - contentinfo [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e35]
+        - paragraph [ref=e36]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e37]:
+        - heading "Contact" [level=4] [ref=e38]
+        - paragraph [ref=e39]: info@zictia.go.tz
+        - paragraph [ref=e40]: +255 24 2235784
+      - generic [ref=e41]:
+        - heading "Links" [level=4] [ref=e42]
+        - generic [ref=e43]:
+          - link "Services" [ref=e44] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e45] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e46] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e47]: © 2026 ZICTIA. All rights reserved.

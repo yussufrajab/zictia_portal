@@ -1,0 +1,31 @@
+# Logs
+logs/
+*.log
+
+# Dependencies
+node_modules/
+
+# Build outputs
+backend/dist/
+frontend/dist/
+frontend/dist-ssr/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Temporary files
+.pids/
+*.tmp

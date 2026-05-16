@@ -1,0 +1,91 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /tickets
+        - link "Admin" [ref=e15] [cursor=pointer]:
+          - /url: /admin
+      - generic [ref=e16]:
+        - button "Language" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+          - generic [ref=e21]: Language
+        - link [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e23]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Test User
+          - button "Log Out" [ref=e29] [cursor=pointer]
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - link "Back to service" [ref=e48] [cursor=pointer]:
+        - /url: /catalog/cloud-virtual-machine
+        - img [ref=e49]
+        - text: Back to service
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - img [ref=e54]
+          - generic [ref=e57]:
+            - heading "Order Cloud Virtual Machine" [level=1] [ref=e58]
+            - paragraph [ref=e59]: Step 1 of 3
+        - generic [ref=e60]:
+          - generic [ref=e61]:
+            - heading "Service Details" [level=3] [ref=e62]
+            - generic [ref=e63]:
+              - generic [ref=e64]:
+                - generic [ref=e65]: Service
+                - generic [ref=e66]: Cloud Virtual Machine
+              - generic [ref=e67]:
+                - generic [ref=e68]: Category
+                - generic [ref=e69]: Cloud/VM
+              - generic [ref=e70]:
+                - generic [ref=e71]: SLA Tier
+                - generic [ref=e72]: GOLD
+              - generic [ref=e73]:
+                - generic [ref=e74]: Monthly Price
+                - generic [ref=e75]: TZS 75,000
+          - generic [ref=e76]:
+            - heading "Contract Duration" [level=3] [ref=e77]
+            - generic [ref=e78]:
+              - button "Monthly TZS 75,000" [ref=e79] [cursor=pointer]:
+                - paragraph [ref=e80]: Monthly
+                - paragraph [ref=e81]: TZS 75,000
+              - button "Quarterly (3 months) TZS 75,000" [ref=e82] [cursor=pointer]:
+                - paragraph [ref=e83]: Quarterly (3 months)
+                - paragraph [ref=e84]: TZS 75,000
+              - button "Annual (12 months) TZS 75,000" [ref=e85] [cursor=pointer]:
+                - paragraph [ref=e86]: Annual (12 months)
+                - paragraph [ref=e87]: TZS 75,000
+          - generic [ref=e88]:
+            - checkbox "Auto-renew at the end of the contract period" [ref=e89]
+            - generic [ref=e90]: Auto-renew at the end of the contract period
+          - button "Continue" [ref=e92] [cursor=pointer]:
+            - text: Continue
+            - img [ref=e93]
+  - contentinfo [ref=e32]:
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e35]
+        - paragraph [ref=e36]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e37]:
+        - heading "Contact" [level=4] [ref=e38]
+        - paragraph [ref=e39]: info@zictia.go.tz
+        - paragraph [ref=e40]: +255 24 2235784
+      - generic [ref=e41]:
+        - heading "Links" [level=4] [ref=e42]
+        - generic [ref=e43]:
+          - link "Services" [ref=e44] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e45] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e46] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e47]: © 2026 ZICTIA. All rights reserved.

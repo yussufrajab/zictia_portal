@@ -1,0 +1,78 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+        - link "Dashboard" [ref=e13] [cursor=pointer]:
+          - /url: /dashboard
+        - link "Support" [ref=e14] [cursor=pointer]:
+          - /url: /tickets
+        - link "Admin" [ref=e15] [cursor=pointer]:
+          - /url: /admin
+      - generic [ref=e16]:
+        - button "Language" [ref=e17] [cursor=pointer]:
+          - img [ref=e18]
+          - generic [ref=e21]: Language
+        - link [ref=e22] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e23]
+        - generic [ref=e27]:
+          - generic [ref=e28]: Test User
+          - button "Log Out" [ref=e29] [cursor=pointer]
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - generic [ref=e33]:
+        - heading "Order Queue" [level=1] [ref=e34]
+        - paragraph [ref=e35]: Review and manage customer orders.
+      - generic [ref=e36]:
+        - button "All" [ref=e37] [cursor=pointer]
+        - button "Submitted" [ref=e38] [cursor=pointer]
+        - button "Under Review" [ref=e39] [cursor=pointer]
+        - button "Approved" [ref=e40] [cursor=pointer]
+        - button "Active" [ref=e41] [cursor=pointer]
+        - button "Rejected" [ref=e42] [cursor=pointer]
+        - button "Cancelled" [ref=e43] [cursor=pointer]
+      - generic [ref=e45]:
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - img [ref=e66]
+            - generic [ref=e69]:
+              - paragraph [ref=e70]: Cloud Virtual Machine
+              - paragraph [ref=e71]: "INDIVIDUAL • Ref: b4b9b652"
+              - paragraph [ref=e72]: Submitted 5/16/2026 • monthly
+          - generic [ref=e73]:
+            - paragraph [ref=e74]: TZS 75,000
+            - button "Review" [ref=e76] [cursor=pointer]
+        - generic [ref=e78]:
+          - generic [ref=e79]:
+            - img [ref=e81]
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Cloud Virtual Machine
+              - paragraph [ref=e86]: "INDIVIDUAL • Ref: 499c12f7"
+              - paragraph [ref=e87]: Submitted 5/16/2026 • monthly
+              - paragraph [ref=e88]: "Config: {\"os\":\"Ubuntu\",\"cpu\":\"2\",\"ram\":\"4\"}"
+          - paragraph [ref=e90]: TZS 75,000
+  - contentinfo [ref=e46]:
+    - generic [ref=e47]:
+      - generic [ref=e48]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e49]
+        - paragraph [ref=e50]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e51]:
+        - heading "Contact" [level=4] [ref=e52]
+        - paragraph [ref=e53]: info@zictia.go.tz
+        - paragraph [ref=e54]: +255 24 2235784
+      - generic [ref=e55]:
+        - heading "Links" [level=4] [ref=e56]
+        - generic [ref=e57]:
+          - link "Services" [ref=e58] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e59] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e60] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e61]: © 2026 ZICTIA. All rights reserved.

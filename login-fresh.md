@@ -1,0 +1,65 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+      - generic [ref=e13]:
+        - button "Language" [ref=e14] [cursor=pointer]:
+          - img [ref=e15]
+          - generic [ref=e18]: Language
+        - generic [ref=e19]:
+          - link "Log In" [ref=e20] [cursor=pointer]:
+            - /url: /login
+          - link "Register" [ref=e21] [cursor=pointer]:
+            - /url: /register
+  - main [ref=e22]:
+    - generic [ref=e24]:
+      - heading "Log in to your account" [level=1] [ref=e25]
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: Email address
+          - generic [ref=e29]:
+            - img [ref=e30]
+            - textbox "you@example.com" [ref=e33]
+        - generic [ref=e34]:
+          - generic [ref=e35]: Password
+          - generic [ref=e36]:
+            - img [ref=e37]
+            - textbox [ref=e40]
+            - button [ref=e41] [cursor=pointer]:
+              - img [ref=e42]
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - checkbox "Remember this device" [ref=e47]
+            - text: Remember this device
+          - link "Forgot password?" [ref=e48] [cursor=pointer]:
+            - /url: /forgot-password
+        - button "Log In" [ref=e49] [cursor=pointer]
+      - paragraph [ref=e50]:
+        - text: Don't have an account?
+        - link "Register" [ref=e51] [cursor=pointer]:
+          - /url: /register
+  - contentinfo [ref=e52]:
+    - generic [ref=e53]:
+      - generic [ref=e54]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e55]
+        - paragraph [ref=e56]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e57]:
+        - heading "Contact" [level=4] [ref=e58]
+        - paragraph [ref=e59]: info@zictia.go.tz
+        - paragraph [ref=e60]: +255 24 2235784
+      - generic [ref=e61]:
+        - heading "Links" [level=4] [ref=e62]
+        - generic [ref=e63]:
+          - link "Services" [ref=e64] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e65] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e66] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e67]: © 2026 ZICTIA. All rights reserved.

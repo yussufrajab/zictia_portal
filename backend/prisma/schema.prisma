@@ -1,0 +1,482 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CustomerAccount {
+  id                    String            @id @default(uuid())
+  accountType           AccountType
+  status                AccountStatus     @default(PENDING_APPROVAL)
+  registrationDate      DateTime          @default(now())
+  approvedAt            DateTime?
+  approvedBy            String?
+  creditLimit           Decimal?          @db.Decimal(18, 2)
+  creditUtilised        Decimal           @default(0) @db.Decimal(18, 2)
+  tin                   String?
+  organisationName      String?
+  ministry              String?
+  governmentRegNo       String?
+  physicalAddress       String
+  billingEmail          String?
+  secondaryBillingEmail String?
+  doNotDisturbStart     Int?
+  doNotDisturbEnd       Int?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  auditLogs             AuditLog[]
+  services              CustomerService[]
+  invoices              Invoice[]
+  notifications         Notification[]
+  orders                Order[]
+  tickets               Ticket[]
+  users                 User[]
+
+  @@index([accountType, status])
+  @@index([tin])
+  @@map("customer_accounts")
+}
+
+model User {
+  id                  String          @id @default(uuid())
+  accountId           String
+  role                UserRole        @default(READ_ONLY)
+  email               String          @unique
+  passwordHash        String
+  fullName            String
+  mobile              String
+  mfaEnabled          Boolean         @default(false)
+  mfaSecret           String?
+  emailVerified       Boolean         @default(false)
+  mobileVerified      Boolean         @default(false)
+  lastLoginAt         DateTime?
+  failedLoginAttempts Int             @default(0)
+  lockedUntil         DateTime?
+  passwordChangedAt   DateTime        @default(now())
+  previousPasswords   String[]        @default([])
+  rememberDeviceToken String?
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  auditLogs           AuditLog[]
+  notifications       Notification[]
+  sessions            Session[]
+  ticketComments      TicketComment[]
+  account             CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([accountId])
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id               String   @id @default(uuid())
+  userId           String
+  tokenHash        String   @unique
+  refreshTokenHash String   @unique
+  ipAddress        String?
+  userAgent        String?
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+  @@map("sessions")
+}
+
+model Service {
+  id                    String            @id @default(uuid())
+  serviceType           ServiceType
+  nameEn                String
+  nameSw                String?
+  descriptionEn         String
+  descriptionSw         String?
+  featuresEn            String[]          @default([])
+  featuresSw            String[]          @default([])
+  pricingMonthly        Decimal           @db.Decimal(18, 2)
+  pricingQuarterly      Decimal?          @db.Decimal(18, 2)
+  pricingAnnual         Decimal?          @db.Decimal(18, 2)
+  setupFee              Decimal?          @default(0) @db.Decimal(18, 2)
+  minimumContractMonths Int               @default(1)
+  slaTier               Slatier           @default(STANDARD)
+  status                ServiceStatus     @default(DRAFT)
+  sortOrder             Int               @default(0)
+  promotionalPrice      Decimal?          @db.Decimal(18, 2)
+  promotionalStart      DateTime?
+  promotionalEnd        DateTime?
+  category              String
+  customerTypes         AccountType[]     @default([])
+  publishedAt           DateTime?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  customerServices      CustomerService[]
+  orders                Order[]
+
+  @@index([serviceType, status])
+  @@index([category])
+  @@map("services")
+}
+
+model CustomerService {
+  id                   String          @id @default(uuid())
+  accountId            String
+  serviceId            String
+  startDate            DateTime
+  endDate              DateTime?
+  contractedParameters Json            @default("{}")
+  currentStatus        String          @default("Active")
+  uptimePercent        Decimal?        @db.Decimal(5, 2)
+  lastHealthCheck      DateTime?
+  autoRenew            Boolean         @default(false)
+  costCentre           String?
+  department           String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  account              CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  service              Service         @relation(fields: [serviceId], references: [id])
+  tickets              Ticket[]
+
+  @@index([accountId])
+  @@index([serviceId])
+  @@map("customer_services")
+}
+
+model Order {
+  id                 String          @id @default(uuid())
+  accountId          String
+  serviceId          String?
+  serviceType        ServiceType
+  status             OrderStatus     @default(SUBMITTED)
+  configuration      Json            @default("{}")
+  contractDuration   String          @default("monthly")
+  autoRenew          Boolean         @default(false)
+  submittedAt        DateTime        @default(now())
+  completedAt        DateTime?
+  approvedBy         String?
+  approvedAt         DateTime?
+  provisioningNotes  String?
+  totalAmount        Decimal?        @db.Decimal(18, 2)
+  cancellationReason String?
+  cancelledAt        DateTime?
+  cancelledBy        String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  account            CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  service            Service?        @relation(fields: [serviceId], references: [id])
+
+  @@index([accountId, status])
+  @@index([serviceType])
+  @@map("orders")
+}
+
+model Invoice {
+  id             String          @id @default(uuid())
+  accountId      String
+  invoiceNumber  String          @unique
+  periodStart    DateTime
+  periodEnd      DateTime
+  lineItems      Json            @default("[]")
+  subtotal       Decimal         @db.Decimal(18, 2)
+  vatAmount      Decimal         @db.Decimal(18, 2)
+  total          Decimal         @db.Decimal(18, 2)
+  status         InvoiceStatus   @default(DRAFT)
+  dueDate        DateTime
+  paidAmount     Decimal         @default(0) @db.Decimal(18, 2)
+  notes          String?
+  sentAt         DateTime?
+  overdueNotices Int             @default(0)
+  lastNoticeAt   DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  account        CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  payments       Payment[]
+
+  @@index([accountId, status])
+  @@index([dueDate])
+  @@index([invoiceNumber])
+  @@map("invoices")
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  accountId         String
+  invoiceId         String?
+  amount            Decimal       @db.Decimal(18, 2)
+  method            PaymentMethod
+  zanmalipoRef      String?
+  status            PaymentStatus @default(PENDING)
+  reconciliationRef String?
+  receiptNumber     String?       @unique
+  failureReason     String?
+  refundedAmount    Decimal?      @db.Decimal(18, 2)
+  refundReason      String?
+  processedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  invoice           Invoice?      @relation(fields: [invoiceId], references: [id])
+
+  @@index([accountId])
+  @@index([invoiceId])
+  @@index([zanmalipoRef])
+  @@map("payments")
+}
+
+model Ticket {
+  id                 String           @id @default(uuid())
+  accountId          String
+  subscriptionId     String?
+  ticketType         TicketType
+  priority           TicketPriority   @default(MEDIUM)
+  status             TicketStatus     @default(OPEN)
+  subject            String
+  description        String
+  slaResponseMinutes Int
+  slaResolveMinutes  Int
+  firstResponseAt    DateTime?
+  resolvedAt         DateTime?
+  closedAt           DateTime?
+  csatScore          Int?
+  csatResolved       String?
+  csatComment        String?
+  currentLevel       Int              @default(1)
+  escalatedAt        DateTime?
+  escalatedReason    String?
+  preferredContact   String           @default("email")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  comments           TicketComment[]
+  account            CustomerAccount  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  subscription       CustomerService? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([accountId, status])
+  @@index([priority, status])
+  @@index([createdAt])
+  @@map("tickets")
+}
+
+model TicketComment {
+  id          String   @id @default(uuid())
+  ticketId    String
+  userId      String
+  content     String
+  isInternal  Boolean  @default(false)
+  attachments String[] @default([])
+  createdAt   DateTime @default(now())
+  ticket      Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+  @@map("ticket_comments")
+}
+
+model Notification {
+  id           String              @id @default(uuid())
+  accountId    String?
+  userId       String?
+  eventType    String
+  channel      NotificationChannel
+  contentEn    String
+  contentSw    String?
+  subjectEn    String?
+  subjectSw    String?
+  sentAt       DateTime?
+  status       NotificationStatus  @default(PENDING)
+  errorMessage String?
+  relatedType  String?
+  relatedId    String?
+  createdAt    DateTime            @default(now())
+  account      CustomerAccount?    @relation(fields: [accountId], references: [id])
+  user         User?               @relation(fields: [userId], references: [id])
+
+  @@index([accountId, status])
+  @@index([userId, status])
+  @@index([eventType])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id         String           @id @default(uuid())
+  userId     String?
+  accountId  String?
+  action     String
+  entityType String
+  entityId   String
+  oldValue   Json?
+  newValue   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime         @default(now())
+  account    CustomerAccount? @relation(fields: [accountId], references: [id])
+  user       User?            @relation(fields: [userId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@index([userId])
+  @@map("audit_logs")
+}
+
+model SystemSetting {
+  key         String   @id
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@map("system_settings")
+}
+
+model KnowledgeBaseArticle {
+  id          String    @id @default(uuid())
+  titleEn     String
+  titleSw     String?
+  contentEn   String
+  contentSw   String?
+  category    String
+  tags        String[]  @default([])
+  isPublished Boolean   @default(false)
+  publishedAt DateTime?
+  viewCount   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([category, isPublished])
+  @@index([tags])
+  @@map("kb_articles")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  tokenHash String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("password_reset_tokens")
+}
+
+enum AccountType {
+  INDIVIDUAL
+  SME
+  CORPORATE
+  GOVERNMENT
+  ISP
+}
+
+enum AccountStatus {
+  PENDING_APPROVAL
+  ACTIVE
+  SUSPENDED
+  CLOSED
+}
+
+enum UserRole {
+  ACCOUNT_ADMIN
+  TECHNICAL_USER
+  BILLING_USER
+  READ_ONLY
+  STAFF_CSR
+  STAFF_TECHNICIAN
+  STAFF_MANAGER
+  ADMIN
+}
+
+enum ServiceType {
+  INTERNET_CAPACITY
+  INTERNET_GOVERNMENT
+  VIRTUAL_MACHINE
+  COLOCATION
+  IP_MPLS
+  VPN
+}
+
+enum ServiceStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  DEPRECATED
+}
+
+enum OrderStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  PROVISIONING
+  ACTIVE
+  COMPLETED
+  REJECTED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  SENT
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  WRITTEN_OFF
+}
+
+enum PaymentMethod {
+  M_PESA
+  TIGO_PESA
+  AIRTEL_MONEY
+  HALO_PESA
+  CARD
+  BANK_TRANSFER
+  CREDIT_ACCOUNT
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum TicketType {
+  TECHNICAL_ISSUE
+  BILLING_QUERY
+  SERVICE_REQUEST
+  COMPLAINT
+  GENERAL_ENQUIRY
+}
+
+enum TicketPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_CUSTOMER
+  PENDING_INTERNAL
+  RESOLVED
+  CLOSED
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  IN_APP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum Slatier {
+  PLATINUM
+  GOLD
+  SILVER
+  STANDARD
+}

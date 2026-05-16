@@ -1,0 +1,199 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e6]:
+      - link "Z ZICTIA Customer Portal" [ref=e8] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e9]: Z
+        - generic [ref=e10]: ZICTIA Customer Portal
+      - navigation [ref=e11]:
+        - link "Services" [ref=e12] [cursor=pointer]:
+          - /url: /catalog
+      - generic [ref=e13]:
+        - button "Language" [ref=e14] [cursor=pointer]:
+          - img [ref=e15]
+          - generic [ref=e18]: Language
+        - generic [ref=e19]:
+          - link "Log In" [ref=e20] [cursor=pointer]:
+            - /url: /login
+          - link "Register" [ref=e21] [cursor=pointer]:
+            - /url: /register
+  - main [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - heading "Service Catalog" [level=1] [ref=e25]
+        - paragraph [ref=e26]: Explore ZICTIA's ICT services and pricing
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - img [ref=e29]
+          - textbox "Search services..." [ref=e32]
+        - generic [ref=e33]:
+          - button "All" [ref=e34] [cursor=pointer]
+          - button "Internet" [ref=e35] [cursor=pointer]
+          - button "Cloud/VM" [ref=e36] [cursor=pointer]
+          - button "Co-location" [ref=e37] [cursor=pointer]
+          - button "Networking" [ref=e38] [cursor=pointer]
+          - button "Security" [ref=e39] [cursor=pointer]
+      - generic [ref=e57]:
+        - generic [ref=e58]:
+          - generic [ref=e59]:
+            - img [ref=e61]
+            - generic [ref=e65]: PLATINUM
+          - heading "Wholesale Internet Capacity" [level=3] [ref=e66]
+          - paragraph [ref=e67]: Dedicated internet capacity for ISPs and telecom operators with guaranteed throughput and SLA-backed uptime.
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - img [ref=e70]
+              - text: Dedicated bandwidth
+            - generic [ref=e72]:
+              - img [ref=e73]
+              - text: DDoS protection
+            - generic [ref=e75]:
+              - img [ref=e76]
+              - text: 99.9% SLA uptime
+          - generic [ref=e78]:
+            - generic [ref=e79]:
+              - paragraph [ref=e80]: Pricing
+              - paragraph [ref=e81]: TZS 500,000/mo
+            - link "Order Now" [ref=e82] [cursor=pointer]:
+              - /url: /catalog/wholesale-internet-capacity
+              - text: Order Now
+              - img [ref=e83]
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - img [ref=e88]
+            - generic [ref=e92]: GOLD
+          - heading "Government Internet" [level=3] [ref=e93]
+          - paragraph [ref=e94]: Secure and reliable internet connectivity for government ministries, departments, and agencies.
+          - generic [ref=e95]:
+            - generic [ref=e96]:
+              - img [ref=e97]
+              - text: Filtered content
+            - generic [ref=e99]:
+              - img [ref=e100]
+              - text: Government support desk
+            - generic [ref=e102]:
+              - img [ref=e103]
+              - text: 99.5% SLA uptime
+          - generic [ref=e105]:
+            - generic [ref=e106]:
+              - paragraph [ref=e107]: Pricing
+              - paragraph [ref=e108]: TZS 150,000/mo
+            - link "Order Now" [ref=e109] [cursor=pointer]:
+              - /url: /catalog/government-internet
+              - text: Order Now
+              - img [ref=e110]
+        - generic [ref=e112]:
+          - generic [ref=e113]:
+            - img [ref=e115]
+            - generic [ref=e118]: GOLD
+          - heading "Cloud Virtual Machine" [level=3] [ref=e119]
+          - paragraph [ref=e120]: Scalable virtual machines with SSD storage, public IPs, and a choice of operating systems.
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - img [ref=e123]
+              - text: 1-32 vCPU
+            - generic [ref=e125]:
+              - img [ref=e126]
+              - text: 1-64 GB RAM
+            - generic [ref=e128]:
+              - img [ref=e129]
+              - text: SSD storage
+          - generic [ref=e131]:
+            - generic [ref=e132]:
+              - paragraph [ref=e133]: Pricing
+              - paragraph [ref=e134]: TZS 75,000/mo
+            - link "Order Now" [ref=e135] [cursor=pointer]:
+              - /url: /catalog/cloud-virtual-machine
+              - text: Order Now
+              - img [ref=e136]
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - img [ref=e141]
+            - generic [ref=e143]: GOLD
+          - heading "Data Center Co-location" [level=3] [ref=e144]
+          - paragraph [ref=e145]: Rack space in ZICTIA's Mazizini data center with power, cooling, and remote hands support.
+          - generic [ref=e146]:
+            - generic [ref=e147]:
+              - img [ref=e148]
+              - text: 1U to full rack
+            - generic [ref=e150]:
+              - img [ref=e151]
+              - text: UPS & generator backup
+            - generic [ref=e153]:
+              - img [ref=e154]
+              - text: 24/7 physical security
+          - generic [ref=e156]:
+            - generic [ref=e157]:
+              - paragraph [ref=e158]: Pricing
+              - paragraph [ref=e159]: TZS 300,000/mo
+            - link "Order Now" [ref=e160] [cursor=pointer]:
+              - /url: /catalog/data-center-co-location
+              - text: Order Now
+              - img [ref=e161]
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - img [ref=e166]
+            - generic [ref=e168]: PLATINUM
+          - heading "IP-MPLS Private Network" [level=3] [ref=e169]
+          - paragraph [ref=e170]: Secure multi-site private networking with QoS, hub-and-spoke or mesh topology options.
+          - generic [ref=e171]:
+            - generic [ref=e172]:
+              - img [ref=e173]
+              - text: Multi-site connectivity
+            - generic [ref=e175]:
+              - img [ref=e176]
+              - text: QoS for voice/video
+            - generic [ref=e178]:
+              - img [ref=e179]
+              - text: Hub-and-spoke or mesh
+          - generic [ref=e181]:
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: Pricing
+              - paragraph [ref=e184]: TZS 400,000/mo
+            - link "Order Now" [ref=e185] [cursor=pointer]:
+              - /url: /catalog/ip-mpls-private-network
+              - text: Order Now
+              - img [ref=e186]
+        - generic [ref=e188]:
+          - generic [ref=e189]:
+            - img [ref=e191]
+            - generic [ref=e193]: SILVER
+          - heading "Enterprise VPN" [level=3] [ref=e194]
+          - paragraph [ref=e195]: Layer 2 and Layer 3 VPN services for secure remote access and site-to-site connectivity.
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - img [ref=e198]
+              - text: L2 & L3 options
+            - generic [ref=e200]:
+              - img [ref=e201]
+              - text: Client apps for all OS
+            - generic [ref=e203]:
+              - img [ref=e204]
+              - text: Split tunneling
+          - generic [ref=e206]:
+            - generic [ref=e207]:
+              - paragraph [ref=e208]: Pricing
+              - paragraph [ref=e209]: TZS 120,000/mo
+            - link "Order Now" [ref=e210] [cursor=pointer]:
+              - /url: /catalog/enterprise-vpn
+              - text: Order Now
+              - img [ref=e211]
+  - contentinfo [ref=e41]:
+    - generic [ref=e42]:
+      - generic [ref=e43]:
+        - heading "ZICTIA Customer Portal" [level=3] [ref=e44]
+        - paragraph [ref=e45]: Zanzibar Communication Corporation (ZICTIA) — powering Zanzibar's digital future.
+      - generic [ref=e46]:
+        - heading "Contact" [level=4] [ref=e47]
+        - paragraph [ref=e48]: info@zictia.go.tz
+        - paragraph [ref=e49]: +255 24 2235784
+      - generic [ref=e50]:
+        - heading "Links" [level=4] [ref=e51]
+        - generic [ref=e52]:
+          - link "Services" [ref=e53] [cursor=pointer]:
+            - /url: /catalog
+          - link "Log In" [ref=e54] [cursor=pointer]:
+            - /url: /login
+          - link "zictia.go.tz" [ref=e55] [cursor=pointer]:
+            - /url: https://zictia.go.tz
+    - generic [ref=e56]: © 2026 ZICTIA. All rights reserved.
