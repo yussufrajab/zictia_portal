@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { api } from "@/lib/api";
-import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle, Star, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Clock, MessageSquare, AlertCircle, CheckCircle, Star, ThumbsUp, TrendingUp } from "lucide-react";
 import toast from "react-hot-toast";
 
 function computeSlaStatus(t: any) {
@@ -13,19 +13,21 @@ function computeSlaStatus(t: any) {
   let responseDueAt: Date | null = null;
   let resolveDueAt: Date | null = null;
 
+  const isPaused = t.status === "PENDING_CUSTOMER";
+
   if (t.slaResponseMinutes) {
     responseDueAt = new Date(created + t.slaResponseMinutes * 60000);
-    if (!t.firstResponseAt && now > responseDueAt.getTime()) {
+    if (!t.firstResponseAt && !isPaused && now > responseDueAt.getTime()) {
       responseBreached = true;
     }
   }
   if (t.slaResolveMinutes) {
     resolveDueAt = new Date(created + t.slaResolveMinutes * 60000);
-    if (!t.resolvedAt && now > resolveDueAt.getTime()) {
+    if (!t.resolvedAt && !isPaused && now > resolveDueAt.getTime()) {
       resolveBreached = true;
     }
   }
-  return { responseBreached, resolveBreached, responseDueAt, resolveDueAt };
+  return { responseBreached, resolveBreached, responseDueAt, resolveDueAt, isPaused };
 }
 
 export default function TicketDetailPage() {
@@ -34,6 +36,8 @@ export default function TicketDetailPage() {
   const [csatScore, setCsatScore] = useState(0);
   const [csatResolved, setCsatResolved] = useState("");
   const [csatComment, setCsatComment] = useState("");
+  const [showEscalate, setShowEscalate] = useState(false);
+  const [escalateReason, setEscalateReason] = useState("");
 
   const { data, isLoading } = useQuery(["ticket", id], () =>
     api.get(`/tickets/my/${id}`).then((r) => r.data.data)
@@ -46,7 +50,20 @@ export default function TicketDetailPage() {
         toast.success("Thank you for your feedback!");
         queryClient.invalidateQueries(["ticket", id]);
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed to submit feedback"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to submit feedback"); },
+    }
+  );
+
+  const escalateMutation = useMutation(
+    () => api.post(`/tickets/my/${id}/escalate`, { reason: escalateReason }),
+    {
+      onSuccess: () => {
+        toast.success("Ticket escalated successfully");
+        setShowEscalate(false);
+        setEscalateReason("");
+        queryClient.invalidateQueries(["ticket", id]);
+      },
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to escalate"); },
     }
   );
 
@@ -81,18 +98,64 @@ export default function TicketDetailPage() {
               {t.ticketType.replace(/_/g, " ")} &bull; Created {new Date(t.createdAt).toLocaleString()}
             </p>
           </div>
-          <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
-            t.status === "OPEN" ? "bg-blue-100 text-blue-700" :
-            t.status === "RESOLVED" ? "bg-green-100 text-green-700" :
-            t.status === "CLOSED" ? "bg-gray-100 text-gray-700" :
-            "bg-amber-100 text-amber-700"
-          }`}>
-            {t.status}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className={`px-3 py-1 rounded-lg text-sm font-medium ${
+              t.status === "OPEN" ? "bg-blue-100 text-blue-700" :
+              t.status === "RESOLVED" ? "bg-green-100 text-green-700" :
+              t.status === "CLOSED" ? "bg-gray-100 text-gray-700" :
+              "bg-amber-100 text-amber-700"
+            }`}>
+              {t.status}
+            </span>
+            {t.status !== "CLOSED" && t.currentLevel < 3 && (
+              <button
+                onClick={() => setShowEscalate((v) => !v)}
+                className="px-2 py-1 text-xs font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200"
+              >
+                Escalate
+              </button>
+            )}
+          </div>
         </div>
 
+        {showEscalate && (
+          <div className="mb-4 bg-red-50 rounded-lg border border-red-200 p-4">
+            <p className="text-sm font-medium text-red-800 mb-2 flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" /> Escalate to Level {t.currentLevel + 1}
+            </p>
+            <div className="flex gap-2">
+              <input
+                value={escalateReason}
+                onChange={(e) => setEscalateReason(e.target.value)}
+                placeholder="Reason for escalation (min 5 characters)..."
+                className="flex-1 px-3 py-2 border border-red-200 rounded-lg text-sm"
+              />
+              <button
+                onClick={() => escalateMutation.mutate()}
+                disabled={escalateReason.length < 5 || escalateMutation.isLoading}
+                className="px-3 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
+              >
+                {escalateMutation.isLoading ? "Submitting..." : "Escalate"}
+              </button>
+              <button
+                onClick={() => { setShowEscalate(false); setEscalateReason(""); }}
+                className="px-3 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {sla.isPaused && (
+          <div className="mb-4 bg-purple-50 rounded-lg border border-purple-200 p-3 text-sm text-purple-800 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-purple-600" />
+            SLA timer is paused — awaiting customer response.
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-4">
-          <div className={`p-3 rounded-lg border ${sla.responseBreached ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"}`}>
+          <div className={`p-3 rounded-lg border ${sla.responseBreached ? "bg-red-50 border-red-200" : sla.isPaused ? "bg-purple-50 border-purple-200" : "bg-gray-50 border-gray-200"}`}>
             <div className="flex items-center gap-2">
               <Clock className={`w-4 h-4 ${sla.responseBreached ? "text-red-600" : "text-gray-500"}`} />
               <span className="font-medium">SLA Response</span>
@@ -110,7 +173,7 @@ export default function TicketDetailPage() {
               </p>
             )}
           </div>
-          <div className={`p-3 rounded-lg border ${sla.resolveBreached ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"}`}>
+          <div className={`p-3 rounded-lg border ${sla.resolveBreached ? "bg-red-50 border-red-200" : sla.isPaused ? "bg-purple-50 border-purple-200" : "bg-gray-50 border-gray-200"}`}>
             <div className="flex items-center gap-2">
               <AlertCircle className={`w-4 h-4 ${sla.resolveBreached ? "text-red-600" : "text-gray-500"}`} />
               <span className="font-medium">SLA Resolution</span>

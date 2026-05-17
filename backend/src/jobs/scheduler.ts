@@ -48,6 +48,81 @@ async function invoiceDueReminders() {
   }
 }
 
+async function overdueReminders() {
+  const now = new Date();
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  const tiers = [
+    { threshold: 5, name: "OVERDUE_5", subject: "Invoice overdue — 5 days", sms: false },
+    { threshold: 7, name: "OVERDUE_7", subject: "Invoice overdue — 7 days", sms: false },
+    { threshold: 15, name: "OVERDUE_15", subject: "Invoice urgent — 15 days overdue", sms: false },
+    { threshold: 30, name: "OVERDUE_30", subject: "Invoice 30 days overdue", sms: true },
+    { threshold: 45, name: "OVERDUE_45", subject: "Invoice 45 days overdue", sms: false },
+    { threshold: 60, name: "OVERDUE_60", subject: "Final notice — 60 days overdue", sms: true },
+  ];
+
+  const invoices = await prisma.invoice.findMany({
+    where: {
+      dueDate: { lt: now },
+      status: { in: ["ISSUED", "SENT", "PARTIALLY_PAID", "OVERDUE"] },
+      OR: [{ lastNoticeAt: null }, { lastNoticeAt: { lt: yesterday } }],
+    },
+    include: {
+      account: { select: { id: true, organisationName: true, billingEmail: true } },
+    },
+  });
+
+  let sent = 0;
+  for (const inv of invoices) {
+    const daysOverdue = Math.floor((now.getTime() - inv.dueDate.getTime()) / (24 * 60 * 60 * 1000));
+
+    let expectedNotices = inv.overdueNotices;
+    for (let i = 0; i < tiers.length; i++) {
+      if (daysOverdue >= tiers[i].threshold) {
+        expectedNotices = i + 2; // tier 0 maps to overdueNotices 2
+      }
+    }
+
+    if (expectedNotices > inv.overdueNotices) {
+      const tier = tiers[expectedNotices - 2];
+      const channels: ("EMAIL" | "SMS" | "IN_APP")[] = tier.sms
+        ? ["EMAIL", "SMS", "IN_APP"]
+        : ["EMAIL", "IN_APP"];
+
+      queueNotification({
+        accountId: inv.accountId,
+        eventType: tier.name,
+        channels,
+        subjectEn: `${tier.subject}: ${inv.invoiceNumber}`,
+        contentEn:
+          `Your invoice ${inv.invoiceNumber} for TSh ${Number(inv.total).toLocaleString()} is ${daysOverdue} days overdue. ` +
+          (tier.threshold >= 60
+            ? "This is a final notice. Please settle immediately to avoid service suspension and additional late fees."
+            : tier.threshold >= 45
+            ? "Formal demand: please arrange payment within 7 days to avoid escalation."
+            : tier.threshold >= 30
+            ? "This is a serious overdue notice. Please settle your balance to avoid service disruption."
+            : tier.threshold >= 15
+            ? "Your invoice remains unpaid. Please arrange payment immediately to avoid late fees."
+            : "Please arrange payment as soon as possible to keep your account in good standing."),
+        relatedType: "invoice",
+        relatedId: inv.id,
+      });
+
+      await prisma.invoice.update({
+        where: { id: inv.id },
+        data: { lastNoticeAt: new Date(), overdueNotices: expectedNotices },
+      });
+
+      sent++;
+    }
+  }
+
+  if (sent > 0) {
+    logger.info("Overdue reminders sent", { count: sent });
+  }
+}
+
 async function slaBreachCheck() {
   const openStatuses = ["OPEN", "IN_PROGRESS", "PENDING_CUSTOMER", "PENDING_INTERNAL"] as const;
   const openTickets = await prisma.ticket.findMany({
@@ -128,6 +203,11 @@ export function startScheduler() {
       await invoiceDueReminders();
     } catch (err: any) {
       logger.error("Invoice reminder task failed", { error: err.message });
+    }
+    try {
+      await overdueReminders();
+    } catch (err: any) {
+      logger.error("Overdue reminder task failed", { error: err.message });
     }
     try {
       await slaBreachCheck();

@@ -1,13 +1,16 @@
 import { useQuery } from "react-query";
 import { api } from "@/lib/api";
 import { Link } from "react-router-dom";
-import { Users, Ticket, CreditCard, Activity, ArrowRight, Server, FileText, AlertTriangle } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Users, Ticket, CreditCard, Activity, ArrowRight, Server, FileText, AlertTriangle, PieChart as PieChartIcon } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 export default function AdminDashboard() {
   const { data } = useQuery("admin-metrics", () => api.get("/admin/dashboard-metrics").then((r) => r.data.data));
   const { data: revenue } = useQuery("admin-revenue-trend", () =>
     api.get("/admin/analytics/revenue-trend").then((r) => r.data.data)
+  );
+  const { data: segments } = useQuery("admin-customer-segments", () =>
+    api.get("/admin/analytics/customer-segments").then((r) => r.data.data)
   );
 
   const cards = [
@@ -60,10 +63,42 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900">Quick Links</h2>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <PieChartIcon className="w-5 h-5 text-zictia-blue" />
+              <h2 className="font-semibold text-gray-900">Active Customers by Segment</h2>
+            </div>
+            {segments && segments.length > 0 ? (
+              <div className="h-[200px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={segments}
+                      dataKey="count"
+                      nameKey="segment"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={70}
+                      label={({ segment, count }) => `${segment}: ${count}`}
+                    >
+                      {segments.map((_entry: any, index: number) => (
+                        <Cell key={`cell-${index}`} fill={["#2563eb", "#06b6d4", "#f59e0b", "#ef4444", "#8b5cf6"][index % 5]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[200px] flex items-center justify-center text-gray-500 text-sm">No segment data yet.</div>
+            )}
           </div>
+
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">Quick Links</h2>
+            </div>
           <div className="space-y-2">
             {[
               { label: "Manage Accounts", to: "/admin/accounts" },
@@ -73,6 +108,7 @@ export default function AdminDashboard() {
               { label: "Manage Billing", to: "/admin/billing" },
               { label: "Manage KB Articles", to: "/admin/kb" },
               { label: "Analytics", to: "/admin/analytics" },
+              { label: "System Settings", to: "/admin/settings" },
             ].map((l) => (
               <Link
                 key={l.label}
@@ -87,5 +123,6 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
+  </div>
   );
 }

@@ -16,6 +16,7 @@ import AdminTickets from "./pages/admin/AdminTickets";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminBilling from "./pages/admin/AdminBilling";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import OrderPage from "./pages/OrderPage";
@@ -25,6 +26,7 @@ import PaymentPage from "./pages/PaymentPage";
 import KBPage from "./pages/KBPage";
 import KBArticlePage from "./pages/KBArticlePage";
 import AdminKB from "./pages/admin/AdminKB";
+import SubUsersPage from "./pages/SubUsersPage";
 
 function App() {
   return (
@@ -42,6 +44,7 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="sub-users" element={<SubUsersPage />} />
           <Route path="tickets" element={<TicketsPage />} />
           <Route path="tickets/:id" element={<TicketDetailPage />} />
           <Route path="kb" element={<KBPage />} />
@@ -54,6 +57,7 @@ function App() {
           <Route path="admin/orders" element={<AdminOrders />} />
           <Route path="admin/billing" element={<AdminBilling />} />
           <Route path="admin/analytics" element={<AdminAnalytics />} />
+          <Route path="admin/settings" element={<AdminSettings />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

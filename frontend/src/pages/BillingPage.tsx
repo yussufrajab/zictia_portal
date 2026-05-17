@@ -10,7 +10,6 @@ import {
   CheckCircle,
   Clock,
   XCircle,
-  Loader,
   Printer,
 } from "lucide-react";
 

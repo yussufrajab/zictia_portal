@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { useMutation, useQuery } from "react-query";
 import toast from "react-hot-toast";
@@ -30,7 +29,6 @@ const categoryLabel: Record<string, string> = {
 };
 
 export default function PaymentPage() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const invoiceId = searchParams.get("invoiceId") || "";

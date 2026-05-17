@@ -145,27 +145,35 @@ model CustomerService {
 }
 
 model Order {
-  id                 String          @id @default(uuid())
-  accountId          String
-  serviceId          String?
-  serviceType        ServiceType
-  status             OrderStatus     @default(SUBMITTED)
-  configuration      Json            @default("{}")
-  contractDuration   String          @default("monthly")
-  autoRenew          Boolean         @default(false)
-  submittedAt        DateTime        @default(now())
-  completedAt        DateTime?
-  approvedBy         String?
-  approvedAt         DateTime?
-  provisioningNotes  String?
-  totalAmount        Decimal?        @db.Decimal(18, 2)
-  cancellationReason String?
-  cancelledAt        DateTime?
-  cancelledBy        String?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-  account            CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  service            Service?        @relation(fields: [serviceId], references: [id])
+  id                    String          @id @default(uuid())
+  accountId             String
+  serviceId             String?
+  serviceType             ServiceType
+  status                  OrderStatus     @default(SUBMITTED)
+  configuration           Json            @default("{}")
+  contractDuration        String          @default("monthly")
+  autoRenew               Boolean         @default(false)
+  submittedAt             DateTime        @default(now())
+  completedAt             DateTime?
+  approvedBy              String?
+  approvedAt              DateTime?
+  provisioningNotes       String?
+  totalAmount             Decimal?        @db.Decimal(18, 2)
+  prorataAmount           Decimal?        @db.Decimal(18, 2)
+  cancellationReason      String?
+  cancelledAt             DateTime?
+  cancelledBy             String?
+  quoteDocumentUrl        String?
+  approvedQuoteAt         DateTime?
+  contractDocumentUrl     String?
+  installationDate        DateTime?
+  requiresTechnicalReview Boolean         @default(false)
+  techReviewPassedAt      DateTime?
+  techReviewPassedBy      String?
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+  account                 CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  service                 Service?        @relation(fields: [serviceId], references: [id])
 
   @@index([accountId, status])
   @@index([serviceType])
@@ -402,6 +410,11 @@ enum ServiceStatus {
 enum OrderStatus {
   SUBMITTED
   UNDER_REVIEW
+  QUOTE_REQUESTED
+  QUOTE_SENT
+  QUOTE_APPROVED
+  CONTRACT_SIGNED
+  SCHEDULED
   APPROVED
   PROVISIONING
   ACTIVE

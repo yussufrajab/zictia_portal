@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Eye, EyeOff, Search } from "lucide-react";
+import { Plus, Pencil, Eye, EyeOff } from "lucide-react";
 
 const serviceTypes = [
   "INTERNET_CAPACITY",
@@ -18,7 +18,7 @@ const slaTiers = ["PLATINUM", "GOLD", "SILVER", "STANDARD"];
 export default function AdminServices() {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     serviceType: "VIRTUAL_MACHINE",
     nameEn: "",
@@ -45,7 +45,7 @@ export default function AdminServices() {
         setShowForm(false);
         resetForm();
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed"); },
     }
   );
 

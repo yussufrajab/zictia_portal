@@ -23,7 +23,7 @@ export default function AdminAccounts() {
         toast.success("Account updated");
         queryClient.invalidateQueries("admin-accounts");
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed"); },
     }
   );
 

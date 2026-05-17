@@ -35,7 +35,7 @@ export default function CatalogPage() {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [sortBy, setSortBy] = useState("");
+  const [sortBy] = useState("");
   const [compareList, setCompareList] = useState<any[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 

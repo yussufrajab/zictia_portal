@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/auth";
-import { Globe, Menu, X, Bell } from "lucide-react";
+import { Globe, Menu, X, Bell, AlertTriangle, X as XIcon } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { api } from "@/lib/api";
@@ -20,6 +20,13 @@ export default function Layout() {
     { enabled: isAuthenticated, refetchInterval: 30000 }
   );
   const unreadCount = unreadData || 0;
+
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const { data: bannerData } = useQuery(
+    "maintenance-banner",
+    () => api.get("/orders/maintenance-banner").then((r) => r.data.data),
+    { refetchInterval: 300000 } // 5 minutes
+  );
 
   const isAdmin = user?.role?.startsWith("STAFF_") || user?.role === "ADMIN";
 
@@ -159,6 +166,28 @@ export default function Layout() {
           </div>
         )}
       </header>
+
+      {bannerData && !bannerDismissed && (
+        <div className={`px-4 py-2 ${bannerData.isUpcoming ? "bg-blue-50 border-b border-blue-200" : "bg-amber-50 border-b border-amber-200"}`}>
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <AlertTriangle className={`w-4 h-4 ${bannerData.isUpcoming ? "text-blue-600" : "text-amber-600"}`} />
+              <span className={bannerData.isUpcoming ? "text-blue-800" : "text-amber-800"}>
+                {bannerData.isUpcoming
+                  ? `Scheduled maintenance in ${bannerData.hoursUntil}h — ${bannerData.messageEn}`
+                  : `Scheduled maintenance: ${bannerData.messageEn} (${new Date(bannerData.start).toLocaleString()} – ${new Date(bannerData.end).toLocaleString()})`
+                }
+              </span>
+            </div>
+            <button
+              onClick={() => setBannerDismissed(true)}
+              className={`p-1 rounded hover:bg-opacity-20 ${bannerData.isUpcoming ? "hover:bg-blue-200 text-blue-600" : "hover:bg-amber-200 text-amber-600"}`}
+            >
+              <XIcon className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="flex-1">
         <Outlet />

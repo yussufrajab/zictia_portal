@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import toast from "react-hot-toast";
-import { Plus, Filter, Search, MessageSquare, Clock, AlertCircle, BookOpen, ArrowRight } from "lucide-react";
+import { Plus, Search, MessageSquare, Clock, AlertCircle, BookOpen, ArrowRight } from "lucide-react";
 
 const priorities = [
   { value: "CRITICAL", label: "Critical", color: "bg-red-100 text-red-700" },
@@ -86,7 +86,7 @@ export default function TicketsPage() {
         setShowForm(false);
         setForm({ ticketType: "TECHNICAL_ISSUE", subject: "", description: "", priority: "MEDIUM", preferredContact: "email", subscriptionId: "" });
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed to create ticket"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to create ticket"); },
     }
   );
 

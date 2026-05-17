@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "react-query";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
-import { Search, CheckCircle, MessageSquare, ArrowRight, AlertCircle, Clock } from "lucide-react";
+import { Search, CheckCircle, MessageSquare, AlertCircle } from "lucide-react";
 
 const statusColors: Record<string, string> = {
   OPEN: "bg-blue-100 text-blue-700",
@@ -13,6 +13,7 @@ const statusColors: Record<string, string> = {
 };
 
 function computeSlaBreached(t: any) {
+  if (t.status === "PENDING_CUSTOMER") return null;
   const now = Date.now();
   const created = new Date(t.createdAt).getTime();
   if (t.slaResponseMinutes && !t.firstResponseAt && now > created + t.slaResponseMinutes * 60000) {
@@ -46,7 +47,7 @@ export default function AdminTickets() {
         setResolvingId(null);
         setResolutionNote("");
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed"); },
     }
   );
 

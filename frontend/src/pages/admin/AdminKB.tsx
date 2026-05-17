@@ -33,7 +33,7 @@ export default function AdminKB() {
         setEditingId(null);
         queryClient.invalidateQueries("admin-kb-articles");
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed to create"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to create"); },
     }
   );
 
@@ -46,7 +46,7 @@ export default function AdminKB() {
         setEditingId(null);
         queryClient.invalidateQueries("admin-kb-articles");
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed to update"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to update"); },
     }
   );
 
@@ -57,7 +57,7 @@ export default function AdminKB() {
         toast.success("Article deleted");
         queryClient.invalidateQueries("admin-kb-articles");
       },
-      onError: (err: any) => toast.error(err.response?.data?.error?.message || "Failed to delete"),
+      onError: (err: any) => { toast.error(err.response?.data?.error?.message || "Failed to delete"); },
     }
   );
 

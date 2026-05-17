@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "react-query";
 import { api } from "@/lib/api";
 import toast from "react-hot-toast";
-import { CreditCard, FileText, ArrowRight, Loader, CheckCircle, AlertCircle, Clock } from "lucide-react";
+import { CreditCard, FileText, Loader, CheckCircle, AlertCircle, Clock } from "lucide-react";
 
 const statusIcon: Record<string, any> = {
   DRAFT: Clock,
