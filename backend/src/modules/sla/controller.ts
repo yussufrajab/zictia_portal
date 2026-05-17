@@ -14,16 +14,18 @@ export function computeSlaStatus(ticket: any) {
   let responseDueAt: Date | null = null;
   let resolveDueAt: Date | null = null;
 
+  const isPaused = ticket.status === "PENDING_CUSTOMER";
+
   if (ticket.slaResponseMinutes) {
     responseDueAt = new Date(createdAt.getTime() + ticket.slaResponseMinutes * 60 * 1000);
-    if (!ticket.firstResponseAt && now > responseDueAt) {
+    if (!ticket.firstResponseAt && !isPaused && now > responseDueAt) {
       responseBreached = true;
     }
   }
 
   if (ticket.slaResolveMinutes) {
     resolveDueAt = new Date(createdAt.getTime() + ticket.slaResolveMinutes * 60 * 1000);
-    if (!ticket.resolvedAt && now > resolveDueAt) {
+    if (!ticket.resolvedAt && !isPaused && now > resolveDueAt) {
       resolveBreached = true;
     }
   }
@@ -33,6 +35,7 @@ export function computeSlaStatus(ticket: any) {
     resolveDueAt: resolveDueAt?.toISOString() || null,
     responseBreached,
     resolveBreached,
+    isPaused,
     firstResponseAt: ticket.firstResponseAt ? new Date(ticket.firstResponseAt).toISOString() : null,
     resolvedAt: ticket.resolvedAt ? new Date(ticket.resolvedAt).toISOString() : null,
     slaResponseMinutes: ticket.slaResponseMinutes,
@@ -41,9 +44,8 @@ export function computeSlaStatus(ticket: any) {
 }
 
 export async function checkSlaBreaches(_req: AuthRequest, res: Response) {
-  const openStatuses = ["OPEN", "IN_PROGRESS", "PENDING_CUSTOMER", "PENDING_INTERNAL"];
   const openTickets = await prisma.ticket.findMany({
-    where: { status: { in: openStatuses } },
+    where: { status: { in: ["OPEN", "IN_PROGRESS", "PENDING_CUSTOMER", "PENDING_INTERNAL"] as any } },
     include: {
       account: { select: { organisationName: true } },
       comments: { orderBy: { createdAt: "asc" }, take: 1 },
@@ -93,8 +95,8 @@ export async function getSlaMetrics(_req: AuthRequest, res: Response) {
       where: {
         createdAt: { gte: thirtyDaysAgo },
         OR: [
-          { firstResponseAt: null, slaResponseMinutes: { not: null }, createdAt: { lt: new Date(now.getTime() - 1000) } },
-          { resolvedAt: null, slaResolveMinutes: { not: null }, createdAt: { lt: new Date(now.getTime() - 1000) } },
+          { firstResponseAt: null, slaResponseMinutes: { not: 0 }, createdAt: { lt: new Date(now.getTime() - 1000) } },
+          { resolvedAt: null, slaResolveMinutes: { not: 0 }, createdAt: { lt: new Date(now.getTime() - 1000) } },
         ],
       },
     }),

@@ -123,7 +123,7 @@ export async function createArticle(req: AuthRequest, res: Response) {
   }
 
   const article = await prisma.knowledgeBaseArticle.create({
-    data: { ...parsed.data, createdBy: req.user!.userId },
+    data: parsed.data,
   });
 
   logger.info("KB article created", { articleId: article.id, by: req.user!.userId });

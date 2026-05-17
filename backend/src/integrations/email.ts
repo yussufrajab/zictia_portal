@@ -10,7 +10,7 @@ interface EmailPayload {
   from?: string;
 }
 
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: config.email.smtpHost,
   port: config.email.smtpPort,
   secure: config.email.smtpPort === 465,

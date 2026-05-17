@@ -24,11 +24,11 @@ function generateTokens(userId: string, accountId: string, role: string, email: 
   const payload = { userId, accountId, role, email };
   const accessToken = jwt.sign(payload, config.jwt.privateKey, {
     algorithm: config.jwt.algorithm,
-    expiresIn: config.jwt.accessTokenExpiry,
+    expiresIn: config.jwt.accessTokenExpiry as any,
   });
   const refreshToken = jwt.sign({ userId, type: "refresh" }, config.jwt.privateKey, {
     algorithm: config.jwt.algorithm,
-    expiresIn: config.jwt.refreshTokenExpiry,
+    expiresIn: config.jwt.refreshTokenExpiry as any,
   });
   return { accessToken, refreshToken };
 }

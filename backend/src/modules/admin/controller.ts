@@ -4,6 +4,7 @@ import { prisma } from "../../utils/db";
 import { success, error } from "../../utils/response";
 import { AuthRequest } from "../../middleware/auth";
 import { logger } from "../../utils/logger";
+import { queueNotification } from "../../utils/notifications";
 
 const approvalSchema = z.object({
   status: z.enum(["ACTIVE", "SUSPENDED"]),
@@ -415,6 +416,7 @@ export async function getCustomerDashboard(req: AuthRequest, res: Response) {
     recentOrders,
     invoiceStatusCounts,
     recentServices,
+    creditInfo,
   ] = await Promise.all([
     prisma.customerService.count({ where: { accountId, currentStatus: "Active" } }),
     prisma.invoice.aggregate({
@@ -453,6 +455,10 @@ export async function getCustomerDashboard(req: AuthRequest, res: Response) {
       take: 5,
       include: { service: { select: { nameEn: true } } },
     }),
+    prisma.customerAccount.findUnique({
+      where: { id: accountId },
+      select: { creditLimit: true, creditUtilised: true },
+    }),
   ]);
 
   res.json(success({
@@ -468,5 +474,7 @@ export async function getCustomerDashboard(req: AuthRequest, res: Response) {
       count: c._count.status,
     })),
     recentServices,
+    creditLimit: creditInfo?.creditLimit ? Number(creditInfo.creditLimit) : null,
+    creditUtilised: creditInfo?.creditUtilised ? Number(creditInfo.creditUtilised) : 0,
   }));
 }
