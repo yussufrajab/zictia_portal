@@ -86,7 +86,6 @@ export async function createTicket(req: AuthRequest, res: Response) {
     },
   });
 
-  // TODO: send notification email + SMS
   logger.info("Ticket created", { ticketId: ticket.id, accountId: req.user!.accountId });
 
   await queueNotification({
@@ -214,7 +213,16 @@ export async function closeTicket(req: AuthRequest, res: Response) {
     data: { status: "CLOSED", closedAt: new Date() },
   });
 
-  // TODO: send CSAT survey
+  await queueNotification({
+    accountId: ticket.accountId,
+    eventType: "TICKET_CLOSED",
+    channels: ["EMAIL", "IN_APP"],
+    subjectEn: `Ticket Closed: ${ticket.subject}`,
+    contentEn: `Your ticket ${ticket.id.slice(0, 8)} has been closed. Please rate your support experience to help us improve.`,
+    relatedType: "ticket",
+    relatedId: ticket.id,
+  });
+
   res.json(success({ message: "Ticket closed" }));
 }
 
@@ -246,7 +254,16 @@ export async function escalateTicket(req: AuthRequest, res: Response) {
     },
   });
 
-  // TODO: notify supervisor
+  await queueNotification({
+    accountId: ticket.accountId,
+    eventType: "TICKET_ESCALATED",
+    channels: ["EMAIL", "IN_APP"],
+    subjectEn: `Ticket Escalated: ${ticket.subject}`,
+    contentEn: `Your ticket ${ticket.id.slice(0, 8)} has been escalated to Level ${ticket.currentLevel + 1}. Reason: ${reason}. A supervisor will review it shortly.`,
+    relatedType: "ticket",
+    relatedId: ticket.id,
+  });
+
   res.json(success({ message: "Ticket escalated successfully" }));
 }
 
@@ -312,7 +329,16 @@ export async function assignTicket(req: AuthRequest, res: Response) {
     data: { status: "IN_PROGRESS" },
   });
 
-  // TODO: log assignment
+  await queueNotification({
+    accountId: ticket.accountId,
+    eventType: "TICKET_ASSIGNED",
+    channels: ["EMAIL", "IN_APP"],
+    subjectEn: `Ticket In Progress: ${ticket.subject}`,
+    contentEn: `Your ticket ${ticket.id.slice(0, 8)} is now being actively worked on by our support team.`,
+    relatedType: "ticket",
+    relatedId: ticket.id,
+  });
+
   res.json(success(ticket));
 }
 
@@ -354,6 +380,15 @@ export async function resolveTicket(req: AuthRequest, res: Response) {
     });
   }
 
-  // TODO: send resolution notification
+  await queueNotification({
+    accountId: ticket.accountId,
+    eventType: "TICKET_RESOLVED",
+    channels: ["EMAIL", "IN_APP"],
+    subjectEn: `Ticket Resolved: ${ticket.subject}`,
+    contentEn: `Your ticket ${ticket.id.slice(0, 8)} has been resolved. If the issue persists or you are not satisfied, you may re-open the ticket within 7 days.`,
+    relatedType: "ticket",
+    relatedId: ticket.id,
+  });
+
   res.json(success(ticket));
 }

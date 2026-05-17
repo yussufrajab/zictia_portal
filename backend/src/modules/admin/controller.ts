@@ -87,7 +87,20 @@ export async function approveAccount(req: AuthRequest, res: Response) {
     data: { status, approvedAt: new Date(), approvedBy: req.user!.userId },
   });
 
-  // TODO: send approval/rejection notification
+  const firstUser = await prisma.user.findFirst({ where: { accountId: id }, select: { id: true, email: true } });
+  if (firstUser) {
+    await queueNotification({
+      accountId: id,
+      userId: firstUser.id,
+      eventType: status === "ACTIVE" ? "ACCOUNT_APPROVED" : "ACCOUNT_REJECTED",
+      channels: ["EMAIL", "IN_APP"],
+      subjectEn: status === "ACTIVE" ? "Your ZICTIA Account Has Been Approved" : "Your ZICTIA Account Registration Update",
+      contentEn: status === "ACTIVE"
+        ? `Your account has been approved by ZICTIA staff. You may now log in to the portal and manage your services.`
+        : `Your account registration has been reviewed and rejected. Reason: ${reason}. Please contact ZICTIA support for further assistance.`,
+    });
+  }
+
   logger.info("Account approval action", { accountId: id, action: status, by: req.user!.userId, reason });
 
   res.json(success(account));
@@ -227,6 +240,166 @@ export async function getServiceUptimeSummary(_req: AuthRequest, res: Response) 
       ? services.reduce((sum, s) => sum + Number(s.uptimePercent || 0), 0) / services.length
       : 0;
   res.json(success({ totalServices: services.length, avgUptime: Number(avgUptime.toFixed(2)) }));
+}
+
+export async function getCustomerSegments(_req: AuthRequest, res: Response) {
+  const segments = await prisma.customerAccount.groupBy({
+    by: ["accountType"],
+    where: { status: "ACTIVE" },
+    _count: { accountType: true },
+  });
+  res.json(success(segments.map((s) => ({
+    segment: s.accountType,
+    count: s._count.accountType,
+  }))));
+}
+
+export async function getSlaCompliance(_req: AuthRequest, res: Response) {
+  const now = new Date();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(now.getDate() - 30);
+
+  const result = await prisma.$queryRaw`
+    SELECT
+      COUNT(*)::int AS total,
+      SUM(
+        CASE WHEN
+          (
+            "firstResponseAt" IS NULL
+            AND "slaResponseMinutes" IS NOT NULL
+            AND "createdAt" + INTERVAL '1 minute' * "slaResponseMinutes" < NOW()
+          )
+          OR (
+            "firstResponseAt" IS NOT NULL
+            AND EXTRACT(EPOCH FROM ("firstResponseAt" - "createdAt")) / 60 > "slaResponseMinutes"
+          )
+          OR (
+            "resolvedAt" IS NULL
+            AND "slaResolveMinutes" IS NOT NULL
+            AND "createdAt" + INTERVAL '1 minute' * "slaResolveMinutes" < NOW()
+          )
+          OR (
+            "resolvedAt" IS NOT NULL
+            AND EXTRACT(EPOCH FROM ("resolvedAt" - "createdAt")) / 60 > "slaResolveMinutes"
+          )
+        THEN 1 ELSE 0 END
+      )::int AS breached
+    FROM tickets
+    WHERE "createdAt" >= ${thirtyDaysAgo}
+  `;
+
+  const row = (result as any)[0];
+  const total = row?.total || 0;
+  const breached = row?.breached || 0;
+  const complianceRate = total > 0 ? Number((((total - breached) / total) * 100).toFixed(1)) : 0;
+
+  res.json(success({
+    totalTickets: total,
+    breachedTickets: breached,
+    complianceRate,
+    periodDays: 30,
+  }));
+}
+
+export async function getCsatTrends(_req: AuthRequest, res: Response) {
+  const now = new Date();
+  const months: { month: string; avgScore: number; responseCount: number }[] = [];
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const start = new Date(d.getFullYear(), d.getMonth(), 1);
+    const end = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+
+    const result = await prisma.ticket.aggregate({
+      where: {
+        csatScore: { not: null },
+        closedAt: { gte: start, lt: end },
+      },
+      _avg: { csatScore: true },
+      _count: { csatScore: true },
+    });
+
+    months.push({
+      month: d.toLocaleString("default", { month: "short", year: "numeric" }),
+      avgScore: Number((result._avg.csatScore || 0).toFixed(1)),
+      responseCount: result._count.csatScore,
+    });
+  }
+
+  res.json(success(months));
+}
+
+export async function getTopCustomers(_req: AuthRequest, res: Response) {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+
+  const topAccounts = await prisma.invoice.groupBy({
+    by: ["accountId"],
+    where: {
+      createdAt: { gte: startOfYear },
+      status: { in: ["ISSUED", "SENT", "PARTIALLY_PAID", "PAID"] },
+    },
+    _sum: { total: true },
+    _count: { id: true },
+    orderBy: { _sum: { total: "desc" } },
+    take: 10,
+  });
+
+  const accounts = await prisma.customerAccount.findMany({
+    where: { id: { in: topAccounts.map((a) => a.accountId) } },
+    select: { id: true, organisationName: true, accountType: true },
+  });
+
+  const accountMap = new Map(accounts.map((a) => [a.id, a]));
+
+  const ranked = topAccounts.map((a, index) => {
+    const account = accountMap.get(a.accountId);
+    return {
+      rank: index + 1,
+      accountId: a.accountId,
+      organisationName: account?.organisationName || "—",
+      accountType: account?.accountType || "—",
+      totalRevenue: Number(a._sum.total || 0),
+      invoiceCount: a._count.id,
+    };
+  });
+
+  res.json(success(ranked));
+}
+
+export async function getArAgeing(_req: AuthRequest, res: Response) {
+  const now = new Date();
+
+  const result = await prisma.$queryRaw`
+    SELECT
+      SUM(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)}::timestamp THEN "total" ELSE 0 END) AS "bucket0_30",
+      SUM(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)}::timestamp AND "dueDate" < ${new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)}::timestamp THEN "total" ELSE 0 END) AS "bucket31_60",
+      SUM(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)}::timestamp AND "dueDate" < ${new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)}::timestamp THEN "total" ELSE 0 END) AS "bucket61_90",
+      SUM(CASE WHEN "dueDate" < ${new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)}::timestamp THEN "total" ELSE 0 END) AS "bucket90_plus",
+      COUNT(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)}::timestamp THEN 1 END)::int AS "count0_30",
+      COUNT(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)}::timestamp AND "dueDate" < ${new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)}::timestamp THEN 1 END)::int AS "count31_60",
+      COUNT(CASE WHEN "dueDate" >= ${new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)}::timestamp AND "dueDate" < ${new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000)}::timestamp THEN 1 END)::int AS "count61_90",
+      COUNT(CASE WHEN "dueDate" < ${new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000)}::timestamp THEN 1 END)::int AS "count90_plus"
+    FROM invoices
+    WHERE status = 'OVERDUE'
+  `;
+
+  const row = (result as any)[0];
+  const bucket0_30 = Number(row?.bucket0_30 || 0);
+  const bucket31_60 = Number(row?.bucket31_60 || 0);
+  const bucket61_90 = Number(row?.bucket61_90 || 0);
+  const bucket90_plus = Number(row?.bucket90_plus || 0);
+  const totalOverdue = bucket0_30 + bucket31_60 + bucket61_90 + bucket90_plus;
+
+  res.json(success({
+    totalOverdue,
+    buckets: [
+      { label: "0–30 days", amount: bucket0_30, count: row?.count0_30 || 0 },
+      { label: "31–60 days", amount: bucket31_60, count: row?.count31_60 || 0 },
+      { label: "61–90 days", amount: bucket61_90, count: row?.count61_90 || 0 },
+      { label: "90+ days", amount: bucket90_plus, count: row?.count90_plus || 0 },
+    ],
+  }));
 }
 
 export async function getCustomerDashboard(req: AuthRequest, res: Response) {

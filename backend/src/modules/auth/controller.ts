@@ -285,7 +285,15 @@ export async function requestPasswordReset(req: Request, res: Response) {
     update: { tokenHash, expiresAt: new Date(Date.now() + 15 * 60 * 1000) },
   });
 
-  // TODO: send email with reset link containing token
+  await queueNotification({
+    accountId: user.accountId,
+    userId: user.id,
+    eventType: "PASSWORD_RESET",
+    channels: ["EMAIL"],
+    subjectEn: "ZICTIA Portal — Password Reset Request",
+    contentEn: `You requested a password reset. Use this token to reset your password: ${token}. This token expires in 15 minutes.`,
+  });
+
   res.json(success({ message: "If an account exists with this email, a reset link has been sent." }));
 }
 
@@ -449,7 +457,15 @@ export async function createSubUser(req: AuthRequest, res: Response) {
     },
   });
 
-  // TODO: send invitation email with temporary password
+  await queueNotification({
+    accountId,
+    userId: newUser.id,
+    eventType: "SUB_USER_INVITED",
+    channels: ["EMAIL"],
+    subjectEn: "Invitation to ZICTIA Customer Portal",
+    contentEn: `You have been invited to the ZICTIA Customer Portal by ${currentUser?.fullName || "your account administrator"}. Your temporary password is: ${tempPassword}. Please log in and change your password immediately.`,
+  });
+
   res.status(201).json(success({
     id: newUser.id,
     email: newUser.email,

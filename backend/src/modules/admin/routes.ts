@@ -13,6 +13,11 @@ import {
   getRevenueTrend,
   getTicketResolutionMetrics,
   getServiceUptimeSummary,
+  getCustomerSegments,
+  getCsatTrends,
+  getSlaCompliance,
+  getTopCustomers,
+  getArAgeing,
 } from "./controller";
 
 const router = Router();
@@ -31,5 +36,10 @@ router.get("/dashboard", requireAuth, getCustomerDashboard);
 router.get("/analytics/revenue-trend", requireAuth, getRevenueTrend);
 router.get("/analytics/ticket-resolution", requireAuth, getTicketResolutionMetrics);
 router.get("/analytics/service-uptime", requireAuth, getServiceUptimeSummary);
+router.get("/analytics/customer-segments", requireAuth, getCustomerSegments);
+router.get("/analytics/csat-trends", requireAuth, getCsatTrends);
+router.get("/analytics/sla-compliance", requireAuth, getSlaCompliance);
+router.get("/analytics/top-customers", requireAuth, getTopCustomers);
+router.get("/analytics/ar-ageing", requireAuth, getArAgeing);
 
 export default router;
